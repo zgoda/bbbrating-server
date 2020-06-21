@@ -27,6 +27,7 @@ base_reqs = [
     'Pony',
     'Marshmallow',
     'python-dotenv',
+    'markdown',
 ]
 
 test_reqs = [

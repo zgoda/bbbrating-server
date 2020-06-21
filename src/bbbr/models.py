@@ -1,6 +1,7 @@
 import os
-
 from datetime import datetime
+
+from markdown import markdown
 from pony.orm import Database, Optional, Required, Set
 
 
@@ -15,27 +16,27 @@ def db_params() -> dict:
             'filename': db_filename,
             'create_db': True,
         })
+        return params
+    if db_driver not in ('postgres', 'mysql'):
+        raise RuntimeError(f'unknown database provider {db_driver}')
+    params['user'] = os.getenv('DB_USER')
+    params['host'] = os.getenv('DB_HOST', '127.0.0.1')
+    db_port = os.getenv('DB_PORT')
+    if db_port is not None:
+        params['port'] = int(db_port)
+    db_name = os.environ['DB_NAME']
+    if db_driver == 'postgres':
+        key = 'dbname'
     else:
-        if db_driver not in ('postgres', 'mysql'):
-            raise RuntimeError(f'unknown database provider {db_driver}')
-        params['user'] = os.getenv('DB_USER')
-        params['host'] = os.getenv('DB_HOST', '127.0.0.1')
-        db_port = os.getenv('DB_PORT')
-        if db_port is not None:
-            params['port'] = int(db_port)
-        db_name = os.environ['DB_NAME']
+        key = 'db'
+    params[key] = db_name
+    db_password = os.getenv('DB_PASSWORD')
+    if db_password:
         if db_driver == 'postgres':
-            key = 'dbname'
+            key = 'password'
         else:
-            key = 'db'
-        params[key] = db_name
-        db_password = os.getenv('DB_PASSWORD')
-        if db_password:
-            if db_driver == 'postgres':
-                key = 'password'
-            else:
-                key = 'passwd'
-            params[key] = db_password
+            key = 'passwd'
+        params[key] = db_password
     return params
 
 
@@ -67,6 +68,20 @@ class Rating(db.Entity):
     rating = Optional(str)
     rating_html = Optional(str)
     user = Required(User)
+
+    def calc_overall_rating(self):
+        notes = [self.colour, self.foam, self.aroma, self.taste, self.carb, self.pack]
+        return int(float(sum(notes)) / len(notes))
+
+    def before_insert(self):
+        self.overall = self.calc_overall_rating()
+        if self.rating:
+            self.rating_html = markdown(self.rating)
+
+    def before_update(self):
+        self.overall = self.calc_overall_rating()
+        if self.rating:
+            self.rating_html = markdown(self.rating)
 
 
 db.bind(**db_params())
