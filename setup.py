@@ -26,6 +26,7 @@ base_reqs = [
     'Falcon',
     'Pony',
     'Marshmallow',
+    'python-dotenv',
 ]
 
 test_reqs = [
@@ -81,7 +82,6 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: Content Management System',
-        'Typing :: Typed',
     ],
     install_requires=base_reqs,
     extras_require={
@@ -94,7 +94,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'bip=bbbr.cli:main',
+            'rating=bbbr.cli:main',
         ]
     },
     python_requires='~=3.7',
