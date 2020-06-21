@@ -59,7 +59,7 @@ dev_reqs = [
 ] + test_reqs + docs_reqs
 
 setup(
-    name='biuletyn-bip',
+    name='bbbrating',
     version=find_version('src', 'bbbr', '__version__.py'),
     author='Jarek Zgoda',
     author_email='jarek.zgoda@gmail.com',
