@@ -25,7 +25,7 @@ long_description = read('README.rst')
 base_reqs = [
     'Falcon',
     'Pony',
-    'Marshmallow'
+    'Marshmallow',
 ]
 
 test_reqs = [
