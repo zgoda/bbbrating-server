@@ -3,7 +3,7 @@ from marshmallow import Schema, fields
 
 class UserSchema(Schema):
     ratings = fields.Nested(
-        'Rating', only=['id', 'beer_id', 'date', 'overall'], many=True
+        'RatingSchema', only=['id', 'beer_id', 'date', 'overall'], many=True
     )
 
     class Meta:
