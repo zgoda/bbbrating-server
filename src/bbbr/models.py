@@ -84,5 +84,19 @@ class Rating(db.Entity):
             self.rating_html = markdown(self.rating)
 
 
+@db.on_connect(provider='sqlite')
+def sqlite_conn_params(db, connection):
+    cursor = connection.cursor()
+    pragmas = [
+        'journal_mode = wal',
+        'cache_size = -64000',
+        'foreign_keys = 1',
+        'ignore_check_constraints = 0'
+    ]
+    for pragma in pragmas:
+        sql = f'PRAGMA {pragma}'
+        cursor.execute(sql)
+
+
 db.bind(**db_params())
 db.generate_mapping(create_tables=True)
