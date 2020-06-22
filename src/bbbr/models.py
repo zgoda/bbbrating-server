@@ -1,8 +1,25 @@
 import os
 from datetime import datetime
+from typing import Any
 
+from falcon import Request, Response
 from markdown import markdown
-from pony.orm import Database, Optional, Required, Set
+from pony.orm import Database, Optional, Required, Set, db_session
+
+
+class DBSessionMiddleware:
+
+    def process_request(self, req: Request, resp: Response):
+        session = db_session()
+        req.pony_session = session
+        session.__enter__()
+
+    def process_response(
+                self, req: Request, resp: Response, resource: Any, success: bool
+            ):
+        session = getattr(req, 'pony_session', None)
+        if session is not None:
+            session.__exit__()
 
 
 def db_params() -> dict:

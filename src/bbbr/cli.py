@@ -3,7 +3,7 @@ from argparse import ArgumentParser, Namespace
 from dotenv import find_dotenv, load_dotenv
 from werkzeug.serving import run_simple
 
-from .app import make_app
+from .app import app
 
 load_dotenv(find_dotenv())
 
@@ -12,7 +12,7 @@ def get_options() -> Namespace:
     parser = ArgumentParser()
     parser.add_argument(
         '-b', '--bind', default='127.0.0.1', dest='host', metavar='HOST',
-        help='host (name or IP) to bind app [default: localhost]',
+        help='hostname or IP to bind [default: localhost]',
     )
     parser.add_argument(
         '-p', '--port', type=int, default=5000,
@@ -26,7 +26,6 @@ def get_options() -> Namespace:
 
 def main():
     opts = get_options()
-    app = make_app()
     run_simple(opts.host, opts.port, app, use_reloader=True, use_debugger=opts.debugger)
 
 
