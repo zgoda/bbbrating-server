@@ -13,6 +13,12 @@ class UserSchema(Schema):
 user_schema = UserSchema()
 
 
+class UserCreateSchema(Schema):
+    email = fields.Email(required=True)
+    name = fields.Str()
+    password = fields.Str(required=True)
+
+
 class RatingSchema(Schema):
     user = fields.Nested(UserSchema, only=['id', 'email', 'name'])
 

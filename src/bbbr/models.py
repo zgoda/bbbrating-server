@@ -51,8 +51,9 @@ class User(db.Entity):
     is_active = Required(bool, default=True)
     ratings = Set('Rating')
 
-    def set_password(self, password: str):
-        self.password = generate_password_hash(password)
+    @staticmethod
+    def gen_password(password: str) -> str:
+        return generate_password_hash(password)
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password, password)
