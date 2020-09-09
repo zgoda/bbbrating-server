@@ -7,14 +7,14 @@ class UserSchema(Schema):
     )
 
     class Meta:
-        additional = ('id', 'name')
+        additional = ('id', 'email', 'name')
 
 
 user_schema = UserSchema()
 
 
 class RatingSchema(Schema):
-    user = fields.Nested(UserSchema, only=['id', 'name'])
+    user = fields.Nested(UserSchema, only=['id', 'email', 'name'])
 
     class Meta:
         additional = (

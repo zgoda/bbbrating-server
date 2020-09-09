@@ -1,13 +1,11 @@
-import falcon
+from flask import Flask
+from pony.flask import Pony
 
-from .models import DBSessionMiddleware
-from .resource import user_collection
+from .resource.user import user_collection
 
 
 def make_app():
-    app = falcon.API(middleware=[DBSessionMiddleware()])
-    app.add_route('/user', user_collection)
+    app = Flask(__name__.split('.')[0])
+    Pony(app)
+    app.add_url_rule('/users', view_func=user_collection)
     return app
-
-
-app = make_app()

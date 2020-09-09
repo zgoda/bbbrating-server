@@ -20,10 +20,9 @@ def find_version(*where):
     return str(ast.literal_eval(_version_re.search(read(*where)).group(1)))
 
 
-long_description = read('README.rst')
-
 base_reqs = [
-    'Falcon',
+    'Flask',
+    'Werkzeug',
     'Pony',
     'Marshmallow',
     'python-dotenv',
@@ -34,6 +33,7 @@ test_reqs = [
     'pytest',
     'pytest-mock',
     'pytest-cov',
+    'pytest-flask',
     'pytest-factoryboy',
 ]
 
@@ -50,14 +50,13 @@ dev_reqs = [
     'flake8',
     'flake8-builtins',
     'flake8-bugbear',
-    'flake8-mutable',
     'flake8-comprehensions',
     'pep8-naming',
     'dlint',
     'rstcheck',
     'rope',
-    'isort',
-    'werkzeug[watchdog]',
+    'isort<5.5',
+    'watchdog',
 ] + test_reqs + docs_reqs
 
 setup(
@@ -67,7 +66,7 @@ setup(
     author_email='jarek.zgoda@gmail.com',
     description='Browar.biz beer rating application (backend)',
     keywords='beer rating',
-    long_description=long_description,
+    long_description=read('README.rst'),
     license='BSD',
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -92,11 +91,6 @@ setup(
         'dev': dev_reqs,
         'test': test_reqs,
         'docs': docs_reqs,
-    },
-    entry_points={
-        'console_scripts': [
-            'rating=bbbr.cli:main',
-        ]
     },
     python_requires='~=3.7',
 )

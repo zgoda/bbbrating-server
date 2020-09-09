@@ -1,25 +1,9 @@
 import os
 from datetime import datetime
-from typing import Any
 
-from falcon import Request, Response
 from markdown import markdown
-from pony.orm import Database, Optional, Required, Set, db_session
-
-
-class DBSessionMiddleware:
-
-    def process_request(self, req: Request, resp: Response):
-        session = db_session()
-        req.pony_session = session
-        session.__enter__()
-
-    def process_response(
-                self, req: Request, resp: Response, resource: Any, success: bool
-            ):
-        session = getattr(req, 'pony_session', None)
-        if session is not None:
-            session.__exit__()
+from pony.orm import Database, Optional, Required, Set
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 def db_params() -> dict:
@@ -61,8 +45,17 @@ db = Database()
 
 
 class User(db.Entity):
-    name = Required(str, index=True)
+    email = Required(str, index=True)
+    name = Optional(str)
+    password = Required(str)
+    is_active = Required(bool, default=True)
     ratings = Set('Rating')
+
+    def set_password(self, password: str):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password: str) -> bool:
+        return check_password_hash(self.password, password)
 
 
 class Rating(db.Entity):
