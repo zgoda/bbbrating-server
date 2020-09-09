@@ -20,7 +20,7 @@ class UserCollection(MethodView):
         )
         db.flush()
         return Response(
-            status=201, headers={'Location': url_for('user.item', id=user.id)}
+            status=201, headers={'Location': url_for('user.item', user_id=user.id)}
         )
 
 
