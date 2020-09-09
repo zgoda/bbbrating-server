@@ -15,7 +15,7 @@ class UserCollection(MethodView):
         sc = UserCreateSchema()
         user_data = sc.load(request.json)
         user = User(
-            name=user_data['name'], email=user_data['email'],
+            name=user_data.get('name', ''), email=user_data['email'],
             password=User.gen_password(user_data['password']),
         )
         db.flush()

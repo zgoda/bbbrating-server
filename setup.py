@@ -22,6 +22,7 @@ def find_version(*where):
 
 base_reqs = [
     'Flask',
+    'Flask-JWT-Extended',
     'Werkzeug',
     'Pony',
     'Marshmallow',
@@ -57,6 +58,7 @@ dev_reqs = [
     'rope',
     'isort<5.5',
     'watchdog',
+    'httpie',
 ] + test_reqs + docs_reqs
 
 setup(

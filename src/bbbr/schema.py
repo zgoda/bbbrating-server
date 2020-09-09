@@ -16,7 +16,7 @@ user_schema = UserSchema()
 
 class UserCreateSchema(Schema):
     email = fields.Email(required=True)
-    name = fields.Str()
+    name = fields.Str(default='')
     password = fields.Str(required=True)
 
 
