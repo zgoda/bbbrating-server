@@ -1,5 +1,3 @@
-import os
-
 from flask import Flask
 from pony.flask import Pony
 

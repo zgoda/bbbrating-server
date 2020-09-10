@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from flask_jwt_extended import (
     create_access_token, create_refresh_token, get_jwt_identity, get_raw_jwt,
-    jwt_refresh_token_required, set_refresh_cookies,
+    jwt_refresh_token_required, set_refresh_cookies, unset_jwt_cookies,
 )
 
 from ..ext import jwt
@@ -37,4 +37,6 @@ def refresh():
 def logout():
     jti = get_raw_jwt()['jti']
     RevokedToken(jti=jti)
-    return ''
+    resp = jsonify('')
+    unset_jwt_cookies(resp)
+    return resp
