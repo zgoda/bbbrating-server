@@ -1,5 +1,6 @@
 from flask import Response, jsonify, request, url_for
 from flask.views import MethodView
+from werkzeug.exceptions import NotFound
 
 from ..models import User, db
 from ..schema import UserCreateSchema, user_schema
@@ -12,12 +13,9 @@ class UserCollection(MethodView):
         return jsonify({'users': user_schema.dump(users, many=True)})
 
     def post(self):
-        sc = UserCreateSchema()
-        user_data = sc.load(request.json)
-        user = User(
-            name=user_data.get('name', ''), email=user_data['email'],
-            password=User.gen_password(user_data['password']),
-        )
+        user_data = UserCreateSchema().load(request.json)
+        password = User.gen_password(user_data.pop('password'))
+        user = User(password=password, **user_data)
         db.flush()
         return Response(
             status=201, headers={'Location': url_for('user.item', user_id=user.id)}
@@ -31,6 +29,8 @@ class UserItem(MethodView):
 
     def get(self, user_id: int):
         user = User.get(id=user_id)
+        if user is None:
+            raise NotFound()
         return jsonify(user_schema.dump(user))
 
 
