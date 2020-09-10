@@ -1,12 +1,12 @@
-from flask import request
+from flask import jsonify, request
 from flask_jwt_extended import (
-    create_access_token, create_refresh_token, get_jwt_identity,
-    jwt_refresh_token_required, get_raw_jwt
+    create_access_token, create_refresh_token, get_jwt_identity, get_raw_jwt,
+    jwt_refresh_token_required, set_refresh_cookies,
 )
 
-from ..models import User, RevokedToken
-from ..schema import user_login_schema
 from ..ext import jwt
+from ..models import RevokedToken, User
+from ..schema import user_login_schema
 
 
 @jwt.token_in_blacklist_loader
@@ -19,10 +19,10 @@ def login():
     data = user_login_schema.load(request.json)
     user = User.get(email=data['email'])
     if user is not None and user.check_password(data['password']):
-        resp = {
+        resp = jsonify({
             'accessToken': create_access_token(identity=data['email']),
-            'refreshToken': create_refresh_token(identity=data['email']),
-        }
+        })
+        set_refresh_cookies(resp, create_refresh_token(identity=data['email']))
         return resp
     return {'error': 'User not found or wrong password'}, 404
 

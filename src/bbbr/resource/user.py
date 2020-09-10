@@ -1,6 +1,8 @@
-from flask import request, url_for
+from flask import jsonify, request, url_for
 from flask.views import MethodView
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required
+from flask_jwt_extended import (
+    create_access_token, create_refresh_token, jwt_required, set_refresh_cookies,
+)
 from werkzeug.exceptions import NotFound
 
 from ..models import User, db
@@ -20,10 +22,10 @@ class UserCollection(MethodView):
         user = User(password=password, **user_data)
         try:
             db.commit()
-            resp = {
+            resp = jsonify({
                 'accessToken': create_access_token(identity=user_data['email']),
-                'refreshToken': create_refresh_token(identity=user_data['email'])
-            }
+            })
+            set_refresh_cookies(resp, create_refresh_token(identity=user_data['email']))
             return resp, 201, {'Location': url_for('user.item', user_id=user.id)}
         except Exception:
             return {'error': 'Email already registered'}, 400

@@ -10,9 +10,7 @@ from .views.auth import login, logout, refresh
 
 def make_app():
     app = Flask(__name__.split('.')[0])
-    app.config['SECRET_KEY'] = app.config['JWT_SECRET_KEY'] = os.environ['SECRET_KEY']
-    app.config['JWT_BLACKLIST_ENABLED'] = True
-    app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+    app.config.from_object('bbbr.config')
     configure_extensions(app)
     app.add_url_rule('/users', 'user.collection', view_func=user_collection)
     app.add_url_rule('/user/<int:user_id>', 'user.item', view_func=user_item)
