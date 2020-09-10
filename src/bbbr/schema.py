@@ -20,6 +20,14 @@ class UserCreateSchema(Schema):
     password = fields.Str(required=True)
 
 
+class UserLoginSchema(Schema):
+    email = fields.Email(required=True)
+    password = fields.Str(required=True)
+
+
+user_login_schema = UserLoginSchema()
+
+
 class RatingSchema(Schema):
     user = fields.Nested(UserSchema, only=['id', 'email', 'name'])
     beer_id = fields.Int(data_key='beerId')

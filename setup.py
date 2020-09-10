@@ -56,7 +56,7 @@ dev_reqs = [
     'dlint',
     'rstcheck',
     'rope',
-    'isort<5.5',
+    'isort',
     'watchdog',
     'httpie',
 ] + test_reqs + docs_reqs

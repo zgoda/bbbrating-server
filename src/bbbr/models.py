@@ -45,8 +45,8 @@ db = Database()
 
 
 class User(db.Entity):
-    email = Required(str, index=True)
-    name = Optional(str)
+    email = Required(str, 100, unique=True)
+    name = Optional(str, 100)
     password = Required(str)
     is_active = Required(bool, default=True)
     ratings = Set('Rating')
@@ -57,6 +57,14 @@ class User(db.Entity):
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password, password)
+
+
+class RevokedToken(db.Entity):
+    jti = Required(str, unique=True)
+
+    @classmethod
+    def is_blacklisted(cls, jti: str) -> bool:
+        return bool(cls.get(jti=jti))
 
 
 class Rating(db.Entity):
