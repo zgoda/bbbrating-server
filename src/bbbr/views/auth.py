@@ -1,4 +1,6 @@
-from flask import jsonify, request
+from datetime import datetime
+
+from flask import Response, jsonify, request
 from flask_jwt_extended import (
     create_access_token, create_refresh_token, get_jwt_identity, get_raw_jwt,
     jwt_refresh_token_required, set_refresh_cookies, unset_jwt_cookies,
@@ -24,19 +26,23 @@ def login():
         })
         set_refresh_cookies(resp, create_refresh_token(identity=data['email']))
         return resp
-    return {'error': 'User not found or wrong password'}, 404
+    return {'error': 'User not found or wrong password'}, 401
 
 
 @jwt_refresh_token_required
 def refresh():
     email = get_jwt_identity()
-    return {'accessToken': create_access_token(email)}
+    resp = jsonify({'accessToken': create_access_token(identity=email)})
+    set_refresh_cookies(resp, create_refresh_token(identity=email))
+    return resp
 
 
 @jwt_refresh_token_required
 def logout():
-    jti = get_raw_jwt()['jti']
-    RevokedToken(jti=jti)
-    resp = jsonify('')
+    jwt = get_raw_jwt()
+    jti = jwt['jti']
+    exp = datetime.fromtimestamp(jwt['exp'])
+    RevokedToken(jti=jti, exp=exp)
+    resp = Response(status=200, content_type='text/plain')
     unset_jwt_cookies(resp)
     return resp

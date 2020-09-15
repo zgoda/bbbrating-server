@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from markdown import markdown
-from pony.orm import Database, Optional, Required, Set
+from pony.orm import Database, Optional, PrimaryKey, Required, Set
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
@@ -60,7 +60,8 @@ class User(db.Entity):
 
 
 class RevokedToken(db.Entity):
-    jti = Required(str, unique=True)
+    jti = PrimaryKey(str, 200)
+    exp = Required(datetime)
 
     @classmethod
     def is_blacklisted(cls, jti: str) -> bool:

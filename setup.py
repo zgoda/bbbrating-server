@@ -59,6 +59,7 @@ dev_reqs = [
     'isort',
     'watchdog',
     'httpie',
+    'flask-shell-ipython',
 ] + test_reqs + docs_reqs
 
 setup(
@@ -69,6 +70,7 @@ setup(
     description='Browar.biz beer rating application (backend)',
     keywords='beer rating',
     long_description=read('README.rst'),
+    long_description_content_type='text/x-rst',
     license='BSD',
     packages=find_packages('src'),
     package_dir={'': 'src'},
