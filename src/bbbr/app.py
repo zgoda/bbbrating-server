@@ -10,14 +10,20 @@ def make_app():
     app = Flask(__name__.split('.')[0])
     app.config.from_object('bbbr.config')
     configure_extensions(app)
-    app.add_url_rule('/users', 'user.collection', view_func=user_collection)
-    app.add_url_rule('/user/<int:user_id>', 'user.item', view_func=user_item)
-    app.add_url_rule('/login', 'auth.login', login, methods=['POST'])
-    app.add_url_rule('/token/refresh', 'auth.token.refresh', refresh, methods=['POST'])
-    app.add_url_rule('/logout', 'auth.logout', logout, methods=['POST'])
+    configure_routing(app)
     return app
 
 
 def configure_extensions(app: Flask):
     Pony(app)
     jwt.init_app(app)
+
+
+def configure_routing(app: Flask):
+    app.add_url_rule('/users', 'user.collection', view_func=user_collection)
+    app.add_url_rule('/user/<int:user_id>', 'user.item', view_func=user_item)
+    app.add_url_rule('/login', 'auth.login', view_func=login, methods=['POST'])
+    app.add_url_rule(
+        '/token/refresh', 'auth.token.refresh', view_func=refresh, methods=['POST']
+    )
+    app.add_url_rule('/logout', 'auth.logout', view_func=logout, methods=['POST'])
