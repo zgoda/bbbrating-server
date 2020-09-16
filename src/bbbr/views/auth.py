@@ -5,6 +5,7 @@ from flask_jwt_extended import (
     create_access_token, create_refresh_token, get_jwt_identity, get_raw_jwt,
     jwt_refresh_token_required, set_refresh_cookies, unset_jwt_cookies,
 )
+from marshmallow.exceptions import ValidationError
 
 from ..ext import jwt
 from ..models import RevokedToken, User
@@ -18,7 +19,10 @@ def check_token_blacklisted(decrypted_token: dict) -> bool:
 
 
 def login():
-    data = user_login_schema.load(request.json)
+    try:
+        data = user_login_schema.load(request.json)
+    except ValidationError as e:
+        return {'error': str(e)}, 400
     user = User.get(email=data['email'])
     if user is not None and user.check_password(data['password']):
         resp = jsonify({
