@@ -3,6 +3,7 @@ from flask.views import MethodView
 from flask_jwt_extended import (
     create_access_token, create_refresh_token, jwt_required, set_refresh_cookies,
 )
+from marshmallow.exceptions import ValidationError
 from werkzeug.exceptions import NotFound
 
 from ..models import User, db
@@ -17,7 +18,10 @@ class UserCollection(MethodView):
         return {'users': user_schema.dump(users, many=True)}
 
     def post(self):
-        user_data = UserCreateSchema().load(request.json)
+        try:
+            user_data = UserCreateSchema().load(request.json)
+        except ValidationError as e:
+            return {'error': str(e)}, 400
         password = User.gen_password(user_data.pop('password'))
         user = User(password=password, **user_data)
         try:

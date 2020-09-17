@@ -87,21 +87,22 @@ class Rating(db.Entity):
     package = Optional(str)
     rating = Optional(str)
     rating_html = Optional(str)
-    user = Required(User)
+    user = Optional(User)
 
     def calc_overall_rating(self):
         notes = [self.colour, self.foam, self.aroma, self.taste, self.carb, self.pack]
         return int(float(sum(notes)) / len(notes))
 
-    def before_insert(self):
+    def _recalc(self):
         self.overall = self.calc_overall_rating()
         if self.rating:
             self.rating_html = markdown(self.rating)
 
+    def before_insert(self):
+        self._recalc()
+
     def before_update(self):
-        self.overall = self.calc_overall_rating()
-        if self.rating:
-            self.rating_html = markdown(self.rating)
+        self._recalc()
 
 
 @db.on_connect(provider='sqlite')
