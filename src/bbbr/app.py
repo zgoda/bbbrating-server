@@ -6,7 +6,7 @@ from .resource.user import user_collection, user_item
 from .views import auth
 
 
-def make_app():
+def make_app() -> Flask:
     app = Flask(__name__.split('.')[0])
     app.config.from_object('bbbr.config')
     configure_extensions(app)

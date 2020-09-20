@@ -8,28 +8,26 @@ class UserSchema(Schema):
     is_active = fields.Bool(data_key='isActive')
 
     class Meta:
-        additional = ('id', 'email', 'name')
+        additional = ('email', 'name')
 
 
 user_schema = UserSchema()
 
 
-class UserCreateSchema(Schema):
+class UserAuthSchema(Schema):
     email = fields.Email(required=True)
+    password = fields.Str(required=True)
+
+
+user_login_schema = UserAuthSchema()
+
+
+class UserCreateSchema(UserAuthSchema):
     name = fields.Str(default='')
-    password = fields.Str(required=True)
-
-
-class UserLoginSchema(Schema):
-    email = fields.Email(required=True)
-    password = fields.Str(required=True)
-
-
-user_login_schema = UserLoginSchema()
 
 
 class RatingSchema(Schema):
-    user = fields.Nested(UserSchema, only=['id', 'email', 'name'])
+    user = fields.Nested(UserSchema, only=['email', 'name'])
     beer_id = fields.Int(data_key='beerId')
     colour_text = fields.Str(data_key='colourText')
     foam_text = fields.Str(data_key='foamText')

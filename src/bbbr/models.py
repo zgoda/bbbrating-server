@@ -1,12 +1,13 @@
 import os
 from datetime import datetime
+from typing import Mapping, Union
 
 from markdown import markdown
 from pony.orm import Database, Optional, PrimaryKey, Required, Set
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
-def db_params() -> dict:
+def db_params() -> Mapping[str, Union[str, int]]:
     db_driver = os.getenv('DB_DRIVER', 'sqlite').lower()
     params = {
         'provider': db_driver
@@ -45,7 +46,7 @@ db = Database()
 
 
 class User(db.Entity):
-    email = Required(str, 100, unique=True)
+    email = PrimaryKey(str, 200)
     name = Optional(str, 100)
     password = Required(str)
     is_active = Required(bool, default=True)
@@ -89,7 +90,7 @@ class Rating(db.Entity):
     rating_html = Optional(str)
     user = Optional(User)
 
-    def calc_overall_rating(self):
+    def calc_overall_rating(self) -> int:
         notes = [self.colour, self.foam, self.aroma, self.taste, self.carb, self.pack]
         return int(float(sum(notes)) / len(notes))
 
