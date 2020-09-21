@@ -1,5 +1,11 @@
 from marshmallow import Schema, fields
 
+fields.Field.default_error_messages.update({
+    'required': 'To pole jest wymagane',
+    'null': 'To pole nie może być puste',
+    'validator_failed': 'Nieprawidłowa wartość',
+})
+
 
 class UserSchema(Schema):
     ratings = fields.Nested(
@@ -15,7 +21,9 @@ user_schema = UserSchema()
 
 
 class UserAuthSchema(Schema):
-    email = fields.Email(required=True)
+    email = fields.Email(
+        required=True, error_messages={'invalid': 'Nieprawidłowy adres email'}
+    )
     password = fields.Str(required=True)
 
 

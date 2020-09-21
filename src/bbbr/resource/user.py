@@ -32,7 +32,7 @@ class UserCollection(MethodView):
             set_refresh_cookies(resp, create_refresh_token(identity=user_data['email']))
             return resp, 201, {'Location': url_for('user.item', user_id=user.id)}
         except Exception:
-            return {'error': 'Email already registered'}, 400
+            return {'error': 'Ten email jest już zarejestrowany'}, 400
 
 
 user_collection = UserCollection.as_view('user_collection')

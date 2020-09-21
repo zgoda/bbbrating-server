@@ -30,7 +30,7 @@ def login():
         })
         set_refresh_cookies(resp, create_refresh_token(identity=data['email']))
         return resp
-    return {'error': 'User not found or wrong password'}, 401
+    return {'error': 'Nie znaleziono użytkownika lub nieprawidłowe hasło'}, 401
 
 
 @jwt_refresh_token_required
