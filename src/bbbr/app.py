@@ -9,6 +9,8 @@ from .views import auth
 def make_app() -> Flask:
     app = Flask(__name__.split('.')[0])
     app.config.from_object('bbbr.config')
+    if app.debug:
+        app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
     configure_extensions(app)
     configure_routing(app)
     return app
