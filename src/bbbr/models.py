@@ -51,6 +51,7 @@ class User(db.Entity):
     password = Required(str)
     is_active = Required(bool, default=True)
     ratings = Set('Rating')
+    reg_date = Required(datetime, default=datetime.utcnow, index=True)
 
     @staticmethod
     def gen_password(password: str) -> str:

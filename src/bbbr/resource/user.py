@@ -25,14 +25,15 @@ class UserCollection(MethodView):
         password = User.gen_password(user_data.pop('password'))
         user = User(password=password, **user_data)
         try:
-            db.commit()
+            db.flush()
             resp = jsonify({
                 'accessToken': create_access_token(identity=user_data['email']),
             })
             set_refresh_cookies(resp, create_refresh_token(identity=user_data['email']))
-            return resp, 201, {'Location': url_for('user.item', user_id=user.id)}
-        except Exception:
-            return {'error': 'Ten email jest już zarejestrowany'}, 400
+            return resp, 201, {'Location': url_for('user.item', email=user.email)}
+        except Exception as e:
+            db.rollback()
+            return {'error': str(e)}, 400
 
 
 user_collection = UserCollection.as_view('user_collection')
@@ -41,8 +42,8 @@ user_collection = UserCollection.as_view('user_collection')
 class UserItem(MethodView):
 
     @jwt_required
-    def get(self, user_id: int):
-        user = User.get(id=user_id)
+    def get(self, email: str):
+        user = User.get(email=email)
         if user is None:
             raise NotFound()
         return user_schema.dump(user)

@@ -12,6 +12,7 @@ class UserSchema(Schema):
         'RatingSchema', only=['id', 'beer_id', 'date', 'overall'], many=True
     )
     is_active = fields.Bool(data_key='isActive')
+    reg_date = fields.DateTime(data_key='regDate')
 
     class Meta:
         additional = ('email', 'name')
