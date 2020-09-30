@@ -3,8 +3,18 @@ from datetime import datetime
 from typing import Mapping, Union
 
 from markdown import markdown
+from passlib.context import CryptContext
 from pony.orm import Database, Optional, PrimaryKey, Required, Set
-from werkzeug.security import check_password_hash, generate_password_hash
+
+pwd_context = CryptContext(schemes=['bcrypt'])
+
+
+def generate_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def check_password_hash(stored: str, password: str) -> bool:
+    return pwd_context.verify(password, stored)
 
 
 def db_params() -> Mapping[str, Union[str, int]]:

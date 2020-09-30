@@ -28,6 +28,7 @@ base_reqs = [
     'Marshmallow',
     'python-dotenv',
     'markdown',
+    'passlib[bcrypt]',
 ]
 
 test_reqs = [
