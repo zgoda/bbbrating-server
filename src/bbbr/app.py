@@ -2,6 +2,7 @@ from flask import Flask
 from pony.flask import Pony
 
 from .ext import jwt
+from .resource.rating import rating_collection
 from .resource.user import user_collection, user_item
 from .views import auth
 
@@ -24,6 +25,7 @@ def configure_extensions(app: Flask):
 def configure_routing(app: Flask):
     app.add_url_rule('/users', 'user.collection', view_func=user_collection)
     app.add_url_rule('/user/<email>', 'user.item', view_func=user_item)
+    app.add_url_rule('/ratings', 'rating_collection', view_func=rating_collection)
     app.add_url_rule('/login', 'auth.login', auth.login, methods=['POST'])
     app.add_url_rule('/token/refresh', 'auth.refresh', auth.refresh, methods=['POST'])
     app.add_url_rule('/logout', 'auth.logout', auth.logout, methods=['POST'])
