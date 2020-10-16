@@ -1,4 +1,5 @@
 import os
+import locale
 from datetime import datetime
 
 import peewee
@@ -7,6 +8,8 @@ from passlib.context import CryptContext
 from peewee import (
     BooleanField, CharField, DateTimeField, ForeignKeyField, IntegerField, TextField,
 )
+
+locale.setlocale(locale.LC_ALL, 'pl_PL.utf-8')
 
 pwd_context = CryptContext(schemes=['bcrypt'])
 
@@ -35,6 +38,11 @@ def _get_db_driver_class():
 
 
 db = _get_db_driver_class()(None)
+
+
+@db.collation('PL')
+def collate_pl(s1, s2):
+    return locale.strcoll(s1, s2)
 
 
 class Model(peewee.Model):
