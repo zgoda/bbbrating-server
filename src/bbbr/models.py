@@ -4,7 +4,7 @@ from typing import Mapping, Union
 
 from markdown import markdown
 from passlib.context import CryptContext
-from pony.orm import Database, Optional, PrimaryKey, Required, Set
+from pony.orm import Database, Optional, PrimaryKey, Required, Set, composite_key
 
 pwd_context = CryptContext(schemes=['bcrypt'])
 
@@ -71,6 +71,19 @@ class User(db.Entity):
         return check_password_hash(self.password, password)
 
 
+class Brewery(db.Entity):
+    name = Required(str, 200)
+    town = Required(str, 200)
+    composite_key(name, town)
+    beers = Set('Beer')
+
+
+class Beer(db.Entity):
+    name = Required(str, 200)
+    brewery = Required(Brewery)
+    ratings = Set('Rating')
+
+
 class RevokedToken(db.Entity):
     jti = PrimaryKey(str, 200)
     exp = Required(datetime)
@@ -81,7 +94,7 @@ class RevokedToken(db.Entity):
 
 
 class Rating(db.Entity):
-    beer_id = Required(int, index=True)
+    beer = Required(Beer)
     date = Required(datetime, default=datetime.utcnow, index=True)
     colour = Required(int)
     colour_text = Required(str)
