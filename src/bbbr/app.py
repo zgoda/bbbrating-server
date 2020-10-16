@@ -1,22 +1,66 @@
+import os
+import tempfile
+
 from flask import Flask
-from pony.flask import Pony
 
 from .ext import jwt
+from .models import ALL_MODELS, db
 from .views import auth, brewery, user
 
 
 def make_app() -> Flask:
     app = Flask(__name__.split('.')[0])
     app.config.from_object('bbbr.config')
-    if app.debug:
-        app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
+    configure_database(app)
+    configure_hooks(app)
     configure_extensions(app)
     configure_routing(app)
     return app
 
 
+def configure_database(app: Flask):
+    driver = os.getenv('DB_DRIVER', 'sqlite')
+    if app.testing:
+        tmp_dir = tempfile.mkdtemp()
+        db_name = os.path.join(tmp_dir, 'bbbr.db')
+    else:
+        db_name = os.getenv('DB_NAME')
+    if driver == 'sqlite':
+        kw = {
+            'pragmas': {
+                'journal_mode': 'wal',
+                'cache_size': -1 * 64000,
+                'foreign_keys': 1,
+                'ignore_check_constraints': 0,
+                'synchronous': 0,
+            }
+        }
+        if db_name is None:
+            db_name = ':memory:'
+            kw = {}
+    else:
+        kw = {
+            'host': os.getenv('DB_HOST'),
+            'port': os.getenv('DB_PORT'),
+            'user': os.getenv('DB_USER'),
+            'password': os.getenv('DB_PASSWORD')
+        }
+    db.init(db_name, **kw)
+    db.create_tables(ALL_MODELS)
+
+
+def configure_hooks(app: Flask):
+    @app.before_request
+    def db_connect():
+        db.connect(reuse_if_open=True)
+
+    @app.teardown_request
+    def db_close(exc):
+        if not db.is_closed():
+            db.close()
+
+
 def configure_extensions(app: Flask):
-    Pony(app)
     jwt.init_app(app)
 
 

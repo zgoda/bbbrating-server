@@ -23,7 +23,7 @@ def login():
         data = user_login_schema.load(request.json)
     except ValidationError as e:
         return {'error': str(e)}, 400
-    user = User.get(email=data['email'])
+    user = User.get(User.email == data['email'])
     if user is not None and user.check_password(data['password']):
         resp = jsonify({
             'accessToken': create_access_token(identity=data['email']),
@@ -46,7 +46,7 @@ def logout():
     jwt = get_raw_jwt()
     jti = jwt['jti']
     exp = datetime.fromtimestamp(jwt['exp'])
-    RevokedToken(jti=jti, exp=exp)
+    RevokedToken.create(jti=jti, exp=exp)
     resp = Response(status=200, content_type='text/plain')
     unset_jwt_cookies(resp)
     return resp

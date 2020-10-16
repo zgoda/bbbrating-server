@@ -5,13 +5,13 @@ from flask_jwt_extended import (
 from marshmallow.exceptions import ValidationError
 from werkzeug.exceptions import NotFound
 
-from ..models import User, db
+from ..models import User
 from ..schema import UserCreateSchema, user_schema
 
 
 @jwt_required
 def collection_get():
-    users = User.select(lambda u: u.is_active is True)
+    users = User.select().where(User.is_active)
     return {'users': user_schema.dump(users, many=True)}
 
 
@@ -21,16 +21,14 @@ def collection_post():
     except ValidationError as e:
         return {'error': str(e)}, 400
     password = User.gen_password(user_data.pop('password'))
-    user = User(password=password, **user_data)
     try:
-        db.flush()
+        user = User.create(password=password, **user_data)
         resp = jsonify({
             'accessToken': create_access_token(identity=user_data['email']),
         })
         set_refresh_cookies(resp, create_refresh_token(identity=user_data['email']))
         return resp, 201, {'Location': url_for('user.item', email=user.email)}
     except Exception as e:
-        db.rollback()
         return {'error': str(e)}, 400
 
 

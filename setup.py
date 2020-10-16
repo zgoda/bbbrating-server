@@ -24,7 +24,7 @@ base_reqs = [
     'Flask',
     'Flask-JWT-Extended',
     'Werkzeug',
-    'Pony',
+    'Peewee',
     'Marshmallow',
     'python-dotenv',
     'markdown',
