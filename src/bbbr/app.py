@@ -2,7 +2,7 @@ from flask import Flask
 from pony.flask import Pony
 
 from .ext import jwt
-from .views import auth, user
+from .views import auth, brewery, user
 
 
 def make_app() -> Flask:
@@ -29,3 +29,4 @@ def configure_routing(app: Flask):
     app.add_url_rule('/login', 'auth.login', auth.login, methods=['POST'])
     app.add_url_rule('/token/refresh', 'auth.refresh', auth.refresh, methods=['POST'])
     app.add_url_rule('/logout', 'auth.logout', auth.logout, methods=['POST'])
+    app.add_url_rule('/breweries', 'brewery.collection.get', brewery.collection_get)

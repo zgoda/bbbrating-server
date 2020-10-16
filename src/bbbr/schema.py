@@ -54,3 +54,29 @@ class RatingSchema(Schema):
 
 
 rating_schema = RatingSchema()
+
+
+class BrewerySchema(Schema):
+    name = fields.Str(required=True)
+    town = fields.Str(required=True)
+    beers = fields.Nested('BeerSchema', only=['name'], many=True)
+
+    class Meta:
+        additional = ['id']
+
+
+brewery_schema = BrewerySchema()
+
+
+class BeerSchema(Schema):
+    name = fields.Str(required=True)
+    brewery = fields.Nested(BrewerySchema, only=['id', 'name', 'town'])
+    ratings = fields.Nested(
+        RatingSchema, only=['id', 'date', 'overall', 'user'], many=True
+    )
+
+    class Meta:
+        additional = ['id']
+
+
+beer_schema = BeerSchema()
