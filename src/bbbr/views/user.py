@@ -5,13 +5,17 @@ from flask_jwt_extended import (
 from marshmallow.exceptions import ValidationError
 from werkzeug.exceptions import NotFound
 
-from ..models import User
+from ..models import User, collate_pl
 from ..schema import UserCreateSchema, user_schema
 
 
 @jwt_required
 def collection_get():
-    users = User.select().where(User.is_active)
+    users = (
+        User.select()
+        .where(User.is_active)
+        .order_by(collate_pl.collation(User.email))
+    )
     return {'users': user_schema.dump(users, many=True)}
 
 

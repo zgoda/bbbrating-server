@@ -29,6 +29,7 @@ base_reqs = [
     'python-dotenv',
     'markdown',
     'passlib[bcrypt]',
+    'PyICU',
 ]
 
 test_reqs = [
