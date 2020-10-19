@@ -52,7 +52,7 @@ class Model(peewee.Model):
 
 class User(Model):
     email = CharField(max_length=200, primary_key=True)
-    name = CharField(max_length=100, null=True)
+    name = CharField(max_length=100, null=True, collation='PL')
     password = TextField()
     is_active = BooleanField(default=True)
     reg_date = DateTimeField(default=datetime.utcnow, index=True)
@@ -66,8 +66,8 @@ class User(Model):
 
 
 class Brewery(Model):
-    name = CharField(max_length=200)
-    town = CharField(max_length=200)
+    name = CharField(max_length=200, collation='PL')
+    town = CharField(max_length=200, collation='PL')
 
     class Meta:
         indexes = (
@@ -76,7 +76,7 @@ class Brewery(Model):
 
 
 class Beer(Model):
-    name = CharField(max_length=200, index=True)
+    name = CharField(max_length=200, index=True, collation='PL')
     brewery = ForeignKeyField(Brewery, backref='beers')
 
 
