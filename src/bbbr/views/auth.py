@@ -23,7 +23,7 @@ def login():
         data = user_login_schema.load(request.json)
     except ValidationError as e:
         return {'error': str(e)}, 400
-    user = User.get(User.email == data['email'])
+    user = User.get_or_none(User.email == data['email'])
     if user is not None and user.check_password(data['password']):
         resp = jsonify({
             'accessToken': create_access_token(identity=data['email']),

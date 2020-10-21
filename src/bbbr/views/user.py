@@ -1,9 +1,10 @@
 from flask import jsonify, request, url_for
 from flask_jwt_extended import (
-    create_access_token, create_refresh_token, jwt_required, set_refresh_cookies,
+    create_access_token, create_refresh_token, get_jwt_identity, jwt_required,
+    set_refresh_cookies,
 )
 from marshmallow.exceptions import ValidationError
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import Forbidden, NotFound
 
 from ..models import User
 from ..schema import UserCreateSchema, user_schema
@@ -36,8 +37,11 @@ def collection_post():
         return {'error': str(e)}, 400
 
 
+@jwt_required
 def item_get(email):
-    user = User.get(email=email)
+    user = User.get_or_none(User.email == email)
     if user is None:
         raise NotFound()
+    if get_jwt_identity() != email:
+        raise Forbidden()
     return user_schema.dump(user)
