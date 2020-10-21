@@ -24,7 +24,7 @@ def configure_database(app: Flask):
         tmp_dir = tempfile.mkdtemp()
         db_name = os.path.join(tmp_dir, 'bbbr.db')
     else:
-        db_name = os.getenv('DB_NAME')
+        db_name = os.getenv('DB_FILENAME')
     if driver == 'sqlite':
         kw = {
             'pragmas': {
