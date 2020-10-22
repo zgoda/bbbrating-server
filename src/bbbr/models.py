@@ -86,7 +86,7 @@ class RevokedToken(Model):
 
     @classmethod
     def is_blacklisted(cls, jti: str) -> bool:
-        return bool(cls.get(jti=jti))
+        return bool(cls.get_or_none(jti=jti))
 
 
 class Rating(Model):
