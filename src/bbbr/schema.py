@@ -9,7 +9,7 @@ fields.Field.default_error_messages.update({
 
 class UserSchema(Schema):
     ratings = fields.Nested(
-        'RatingSchema', only=['id', 'beer_id', 'date', 'overall'], many=True
+        'RatingSchema', only=['id', 'beer', 'date', 'overall'], many=True
     )
     is_active = fields.Bool(data_key='isActive')
     reg_date = fields.DateTime(data_key='regDate')
@@ -37,7 +37,7 @@ class UserCreateSchema(UserAuthSchema):
 
 class RatingSchema(Schema):
     user = fields.Nested(UserSchema, only=['email', 'name'])
-    beer_id = fields.Int(data_key='beerId')
+    beer = fields.Nested('BeerSchema', only=['id', 'name'])
     colour_text = fields.Str(data_key='colourText')
     foam_text = fields.Str(data_key='foamText')
     aroma_text = fields.Str(data_key='aromaText')
@@ -59,7 +59,12 @@ rating_schema = RatingSchema()
 class BrewerySchema(Schema):
     name = fields.Str(required=True)
     town = fields.Str(required=True)
-    beers = fields.Nested('BeerSchema', only=['name'], many=True)
+    beers = fields.Nested('BeerSchema', only=['id', 'name'], many=True)
+    beers_brewed = fields.Nested(
+        'BeerSchema', only=['id', 'name'], many=True, data_key='beersBrewed'
+    )
+    is_active = fields.Boolean(data_key='isActive')
+    is_contract = fields.Boolean(data_key='isContract')
 
     class Meta:
         additional = ['id']
@@ -71,9 +76,13 @@ brewery_schema = BrewerySchema()
 class BeerSchema(Schema):
     name = fields.Str(required=True)
     brewery = fields.Nested(BrewerySchema, only=['id', 'name', 'town'])
+    brewed_at = fields.Nested(
+        BrewerySchema, only=['id', 'name', 'town'], data_key='brewedAt'
+    )
     ratings = fields.Nested(
         RatingSchema, only=['id', 'date', 'overall', 'user'], many=True
     )
+    is_active = fields.Boolean(data_key='isActive')
 
     class Meta:
         additional = ['id']
