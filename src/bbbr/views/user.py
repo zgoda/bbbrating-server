@@ -5,7 +5,7 @@ from flask_jwt_extended import (
 )
 from marshmallow.exceptions import ValidationError
 from peewee import IntegrityError
-from werkzeug.exceptions import Forbidden, NotFound
+from werkzeug.exceptions import NotFound
 
 from ..models import User
 from ..schema import user_create_schema, user_schema, user_update_schema
@@ -39,22 +39,18 @@ def collection_post():
 
 
 @jwt_required
-def item_get(email):
-    user = User.get_or_none(User.email == email)
+def item_get():
+    user = User.get_or_none(User.email == get_jwt_identity())
     if user is None:
         raise NotFound()
-    if get_jwt_identity() != email:
-        raise Forbidden()
     return user_schema.dump(user)
 
 
 @jwt_required
-def item_post(email):
-    user = User.get_or_none(User.email == email)
+def item_post():
+    user = User.get_or_none(User.email == get_jwt_identity())
     if user is None:
         raise NotFound()
-    if get_jwt_identity() != email:
-        raise Forbidden()
     try:
         user_data = user_update_schema.load(request.json)
     except ValidationError as e:
