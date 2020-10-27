@@ -8,7 +8,7 @@ from peewee import IntegrityError
 from werkzeug.exceptions import Forbidden, NotFound
 
 from ..models import User
-from ..schema import UserCreateSchema, user_schema
+from ..schema import user_create_schema, user_schema, user_update_schema
 
 
 @jwt_required
@@ -23,7 +23,7 @@ def collection_get():
 
 def collection_post():
     try:
-        user_data = UserCreateSchema().load(request.json)
+        user_data = user_create_schema.load(request.json)
     except ValidationError as e:
         return {'error': str(e)}, 400
     password = User.gen_password(user_data.pop('password'))
@@ -35,7 +35,7 @@ def collection_post():
         'accessToken': create_access_token(identity=user_data['email']),
     })
     set_refresh_cookies(resp, create_refresh_token(identity=user_data['email']))
-    return resp, 201, {'Location': url_for('user.item', email=user.email)}
+    return resp, 201, {'Location': url_for('user.item.get', email=user.email)}
 
 
 @jwt_required
@@ -45,4 +45,21 @@ def item_get(email):
         raise NotFound()
     if get_jwt_identity() != email:
         raise Forbidden()
+    return user_schema.dump(user)
+
+
+@jwt_required
+def item_post(email):
+    user = User.get_or_none(User.email == email)
+    if user is None:
+        raise NotFound()
+    if get_jwt_identity() != email:
+        raise Forbidden()
+    try:
+        user_data = user_update_schema.load(request.json)
+    except ValidationError as e:
+        return {'error': str(e)}, 400
+    for k, v in user_data.items():
+        setattr(user, k, v)
+    user.save()
     return user_schema.dump(user)

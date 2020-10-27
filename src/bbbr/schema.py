@@ -21,6 +21,13 @@ class UserSchema(Schema):
 user_schema = UserSchema()
 
 
+class UserUpdateSchema(Schema):
+    name = fields.Str()
+
+
+user_update_schema = UserUpdateSchema()
+
+
 class UserAuthSchema(Schema):
     email = fields.Email(
         required=True, error_messages={'invalid': 'Nieprawidłowy adres email'}
@@ -33,6 +40,9 @@ user_login_schema = UserAuthSchema()
 
 class UserCreateSchema(UserAuthSchema):
     name = fields.Str(default='')
+
+
+user_create_schema = UserCreateSchema()
 
 
 class RatingSchema(Schema):

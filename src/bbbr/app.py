@@ -69,7 +69,10 @@ def configure_routing(app: Flask):
     app.add_url_rule(
         '/users', 'user.collection.post', user.collection_post, methods=['POST']
     )
-    app.add_url_rule('/user/<email>', 'user.item', user.item_get)
+    app.add_url_rule('/user/<email>', 'user.item.get', user.item_get)
+    app.add_url_rule(
+        '/user/<email>', 'user.item.post', user.item_post, methods=['POST']
+    )
     app.add_url_rule('/login', 'auth.login', auth.login, methods=['POST'])
     app.add_url_rule('/token/refresh', 'auth.refresh', auth.refresh, methods=['POST'])
     app.add_url_rule('/logout', 'auth.logout', auth.logout, methods=['POST'])
