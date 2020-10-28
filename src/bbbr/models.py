@@ -57,6 +57,12 @@ class User(Model):
     is_active = BooleanField(default=True, index=True)
     reg_date = DateTimeField(default=datetime.utcnow, index=True)
 
+    class Meta:
+        table_name = 'users'  # 'user' is reserved in Postgres
+
+    def __str__(self):
+        return self.name
+
     @staticmethod
     def gen_password(password: str) -> str:
         return generate_password_hash(password)
