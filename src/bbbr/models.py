@@ -76,12 +76,18 @@ class Brewery(Model):
             (('name', 'town'), True),
         )
 
+    def __str__(self):
+        return f'{self.name}, {self.town}'
+
 
 class Beer(Model):
     name = CharField(max_length=200, index=True, collation='PL')
     brewery = ForeignKeyField(Brewery, backref='beers')
     brewed_at = ForeignKeyField(Brewery, backref='beers_brewed', null=True)
     is_active = BooleanField(default=True, index=True)
+
+    def __str__(self):
+        return f'{self.name} ({self.brewery.name})'
 
 
 class RevokedToken(Model):
@@ -113,6 +119,9 @@ class Rating(Model):
     rating = TextField(null=True)
     rating_html = TextField(null=True)
     user = ForeignKeyField(User, backref='ratings', on_delete='SET NULL', null=True)
+
+    def __str__(self):
+        return f'{self.beer.name}'
 
     def calc_overall_rating(self) -> int:
         notes = [self.colour, self.foam, self.aroma, self.taste, self.carb, self.pack]
