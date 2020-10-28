@@ -13,12 +13,13 @@ def collection_get():
 
 
 def most_rated():
+    count_ratings = fn.Count(Rating.id)
     beers = (
         Beer
-        .select(Beer, fn.Count(Rating.id).alias('ratings_count'))
+        .select(Beer, count_ratings.alias('ratings_count'))
         .join(Rating, JOIN.INNER)
         .group_by(Beer)
-        .order_by(fn.Count(Rating.id).desc())
+        .order_by(count_ratings.desc())
         .limit(5)
     )
     return {'beers': beer_schema.dump(beers, many=True)}

@@ -5,7 +5,7 @@ from flask import Flask
 
 from .ext import jwt
 from .models import ALL_MODELS, db
-from .views import auth, beer, brewery, user
+from .views import auth, beer, brewery, rating, user
 
 
 def make_app() -> Flask:
@@ -76,3 +76,5 @@ def configure_routing(app: Flask):
     app.add_url_rule('/logout', 'auth.logout', auth.logout, methods=['POST'])
     app.add_url_rule('/breweries', 'brewery.collection.get', brewery.collection_get)
     app.add_url_rule('/beers', 'beer.collection.get', beer.collection_get)
+    app.add_url_rule('/beers/mostrated', 'beer.collection.mostrated', beer.most_rated)
+    app.add_url_rule('/ratings/latest', 'rating.collection.latest', rating.latest)

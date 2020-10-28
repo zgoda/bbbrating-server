@@ -51,7 +51,7 @@ class Model(peewee.Model):
 
 
 class User(Model):
-    email = CharField(max_length=200, primary_key=True)
+    email = CharField(max_length=200, unique=True)
     name = CharField(max_length=100, null=True, collation='PL')
     password = TextField()
     is_active = BooleanField(default=True, index=True)
