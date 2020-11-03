@@ -3,6 +3,7 @@ import tempfile
 
 from flask import Flask
 
+from .cli import data_cli
 from .ext import jwt
 from .models import ALL_MODELS, db
 from .views import auth, beer, brewery, rating, user
@@ -15,6 +16,7 @@ def make_app() -> Flask:
     configure_hooks(app)
     configure_extensions(app)
     configure_routing(app)
+    configure_cli(app)
     return app
 
 
@@ -78,3 +80,7 @@ def configure_routing(app: Flask):
     app.add_url_rule('/beers', 'beer.collection.get', beer.collection_get)
     app.add_url_rule('/beers/mostrated', 'beer.collection.mostrated', beer.most_rated)
     app.add_url_rule('/ratings/latest', 'rating.collection.latest', rating.latest)
+
+
+def configure_cli(app: Flask):
+    app.cli.add_command(data_cli)
