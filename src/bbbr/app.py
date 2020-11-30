@@ -11,12 +11,13 @@ from .views import auth, beer, brewery, rating, user
 
 def make_app() -> Flask:
     app = Flask(__name__.split('.')[0])
-    app.config.from_object('bbbr.config')
-    configure_database(app)
-    configure_hooks(app)
-    configure_extensions(app)
-    configure_routing(app)
-    configure_cli(app)
+    with app.app_context():
+        app.config.from_object('bbbr.config')
+        configure_database(app)
+        configure_hooks(app)
+        configure_extensions(app)
+        configure_routing(app)
+        configure_cli(app)
     return app
 
 
